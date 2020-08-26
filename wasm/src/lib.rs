@@ -2,7 +2,6 @@
 
 extern crate aes;
 extern crate block_modes;
-extern crate hex_literal;
 extern crate base64;
 
 use wasm_bindgen::prelude::*;
@@ -29,7 +28,7 @@ pub fn greet() {
 }
 
 #[wasm_bindgen]
-pub fn zx_encrypt(data: String, key: String, iv: String) {
+pub fn zx_encrypt(data: String, key: String, iv: String) -> String {
     type Aes128Cbc = Cbc<Aes128, Pkcs7>;
     let cipher = Aes128Cbc::new_var(key.as_bytes(), iv.as_bytes()).unwrap();
 
@@ -41,11 +40,11 @@ pub fn zx_encrypt(data: String, key: String, iv: String) {
     let ciphertext = cipher.encrypt(&mut buffer, pos).unwrap();
     let result = base64::encode(&ciphertext);
 
-    alert(&result);
+    return result;
 }
 
 #[wasm_bindgen]
-pub fn zx_decrypt(data: String, key: String, iv: String) {
+pub fn zx_decrypt(data: String, key: String, iv: String) -> String {
     let bytes = base64::decode(&data).unwrap();
 
     type Aes128Cbc = Cbc<Aes128, Pkcs7>;
@@ -55,5 +54,5 @@ pub fn zx_decrypt(data: String, key: String, iv: String) {
     let ciphertext = cipher.decrypt(&mut buffer).unwrap();
     let result = str::from_utf8(&ciphertext).unwrap();
 
-    alert(&result);
+    return result.to_string();
 }
