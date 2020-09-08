@@ -29,14 +29,17 @@ pub fn greet() {
 
 #[wasm_bindgen]
 pub fn zx_encrypt(data: String, key: String, iv: String) -> String {
+    let tmp_str = base64::decode(&data).unwrap();
+    let msg = str::from_utf8(&tmp_str).unwrap();
+
     type Aes128Cbc = Cbc<Aes128, Pkcs7>;
     let cipher = Aes128Cbc::new_var(key.as_bytes(), iv.as_bytes()).unwrap();
 
     // buffer must have enough space for message+padding
-    let mut buffer = [0u8; 32];
+    let mut buffer = [0u8; 4096];
     // copy message to the buffer
-    let pos = data.len();
-    buffer[..pos].copy_from_slice(data.as_bytes());
+    let pos = msg.len();
+    buffer[..pos].copy_from_slice(msg.as_bytes());
     let ciphertext = cipher.encrypt(&mut buffer, pos).unwrap();
     let result = base64::encode(&ciphertext);
 
